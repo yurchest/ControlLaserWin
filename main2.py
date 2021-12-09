@@ -354,7 +354,7 @@ class App(QWidget):
                 self.w_root.label_59.setText('Не в норме')
                 self.w_root.label_59.setStyleSheet('border-radius: 14;background-color: rgb(255, 0, 0,120);')
                 self.isEn532 = False
-            elif self.dataBin[4][7] == '1':  # Модуль регенеративного усилителя работает 532 в норме
+            elif self.dataBin[4][6] == '1':  # Модуль регенеративного усилителя работает 532 в норме
                 self.w_root.label_59.setText('В норме')
                 self.w_root.label_59.setStyleSheet('border-radius: 14;background-color: rgb(25, 255, 0, 100);')
                 self.isEn532 = True
@@ -586,7 +586,6 @@ class SendRepeat(QThread):
         clck = 0
         tx = ['#', '\x03', 'E', '\x00']
         while 1:
-            print('clck = ',clck)
             try:
                 self.msleep(200)
                 ser = serial.Serial(
@@ -611,9 +610,9 @@ class SendRepeat(QThread):
                     self.checkCon.emit(True)
                     clck = 0
 
-
-                if len(data) > 6 and data[0] == 33 and data[1] == 5 and data[2] == 69:  # Посмотреть на корректность
-                    print('RX_Repeat', functions.strToBin(data))
+                if len(data) > 6 and chr(data[0]) == '!' and chr(data[1]) == '5' and chr(data[2]) == 'E':  # Посмотреть на корректность
+                    print(chr(data[0]))
+                    print('RX_Repeat : ', functions.strToBin(data))
                     print('RX_Repeat : ', data)
                     self.out_signal.emit(data)
             except:

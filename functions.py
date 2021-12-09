@@ -20,8 +20,7 @@ def strToBin(data):
     #     data_arr[i] = data[i]
 
     data_arr = bytearray(data)
-
-    data_out = [] * len(data)
+    data_out = [0] * len(data)
     if len(data) > 6:
         data_out[0] = data_arr[0]
         data_out[1] = data_arr[1]

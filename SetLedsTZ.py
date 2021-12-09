@@ -92,7 +92,7 @@ def setLeds(self):
             self.w_root.label_59.setText('Не в норме')
             self.w_root.label_59.setStyleSheet('border-radius: 14;background-color: rgb(255, 0, 0,120);')
             self.isEn532 = False
-        elif self.dataBin[4][7] == '1':  # Модуль регенеративного усилителя работает 532 в норме
+        elif self.dataBin[4][6] == '1':  # Модуль регенеративного усилителя работает 532 в норме
             self.w_root.label_59.setText('В норме')
             self.w_root.label_59.setStyleSheet('border-radius: 14;background-color: rgb(25, 255, 0, 100);')
             self.isEn532 = True
