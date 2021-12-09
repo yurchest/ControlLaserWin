@@ -18,7 +18,7 @@ def strToBin(data):
     #
     # for i in range(len(data)):
     #     data_arr[i] = data[i]
-
+    data_arr = [0]* len(data)
     data_arr = bytearray(data)
     data_out = [0] * len(data)
     if len(data) > 6:
@@ -60,7 +60,7 @@ def SendMess(bytebuff, ser):
 
 
 def ReadMess(ser):
-    data = ser.readline(ser.inWaiting())
+    data = ser.readline(7)
     return data
 
 

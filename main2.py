@@ -107,12 +107,13 @@ class App(QWidget):
         self.changeTextEdit()
 
     def checkData(self, data):
-        if self.checkControlSum(data):
-            self.w_root.label_63.setStyleSheet('background-color: rgb(0, 255, 0,150);border-radius: 20')
-            self.dataBin = functions.strToBin(data)
-            self.setLeds()
-            if self.showDataOnTextEdit == True:
-                self.w_root.textEdit.append(str(self.dataBin))
+        if data:
+            if self.checkControlSum(data):
+                self.w_root.label_63.setStyleSheet('background-color: rgb(0, 255, 0,150);border-radius: 20')
+                self.dataBin = functions.strToBin(data)
+                self.setLeds()
+                if self.showDataOnTextEdit == True:
+                    self.w_root.textEdit.append(str(self.dataBin))
 
     def checkMerr(self, data):
         if data.decode('raw_unicode_escape') == 'OK':
@@ -138,11 +139,11 @@ class App(QWidget):
         x = 0
         for byte_str in data[:6]:
             x += byte_str
-        # print(x)
-        if data[6] == (x - 255) - 1:  # ???????
+        print(x)
+        if chr(x).encode()[-1] == data[6] :  # ???????
             return True
         else:
-            return True
+            return False
 
     def changeTextEdit(self):
         if str(self.w_root.tabWidget.currentIndex()) == '0':
@@ -211,7 +212,7 @@ class App(QWidget):
             self.w_root.textEdit.setTextColor(self.greenText)
             self.w_root.textEdit.append('Успешное выполнение команды " Статус " ')
             self.w_root.textEdit.setTextColor(self.blackText)
-            self.w_root.textedit.append('----------------------------------------------------------------------')
+            self.w_root.textEdit.append('----------------------------------------------------------------------')
             return True
         elif self.merr == 'OK':
             self.w_root.textEdit.setTextColor(self.greenText)
@@ -542,22 +543,23 @@ class SendRead(QThread):
                     ser = serial.Serial(
                         port=self.port,
                         baudrate=9600,
-                        timeout=0.05,
+                        timeout=0.01,
                         parity=serial.PARITY_NONE,
                         stopbits=serial.STOPBITS_ONE,
                         bytesize=serial.EIGHTBITS
                     )
                     ser.isOpen()
                     functions.SendMess(self.tx, ser)
+                    print('TX : ', self.tx)
+                    self.tx = ''
                     self.msleep(50)
                     data = functions.ReadMess(ser)
-                    print('TX : ', functions.strToBin(functions.WriteCoM(self.tx)))
                     print('RX  : ', functions.strToBin(data))
                     self.checkData(data)
-                    self.tx = ''
                     ser.close()
                 except:
                     # self.msleep(50)
+                    self.tx = ''
                     print('Send exception')
 
     def checkData(self, data):
@@ -598,7 +600,7 @@ class SendRepeat(QThread):
                 )
                 ser.isOpen()
                 functions.SendMess(tx, ser)
-                self.msleep(50)
+                self.msleep(40)
                 data = functions.ReadMess(ser)
                 ser.close()
                 if not data:
@@ -609,14 +611,14 @@ class SendRepeat(QThread):
                 else:
                     self.checkCon.emit(True)
                     clck = 0
-
-                if len(data) > 6 and chr(data[0]) == '!' and chr(data[1]) == '5' and chr(data[2]) == 'E':  # Посмотреть на корректность
-                    print(chr(data[0]))
+                if len(data) > 6 and chr(data[0]) == '!' and data[1] == 5 and chr(
+                        data[2]) == 'E':  # Посмотреть на корректность
                     print('RX_Repeat : ', functions.strToBin(data))
                     print('RX_Repeat : ', data)
                     self.out_signal.emit(data)
             except:
                 print('Querry exception')
+                ser.close()
                 clck += 1
                 if clck > 3:
                     clck = 4
