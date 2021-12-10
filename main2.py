@@ -95,7 +95,7 @@ class App(QWidget):
         self.greenText = QColor(111, 189, 100)
         self.yellowText = QColor(255, 255, 0)
         self.blackText = QColor(0, 0, 0)
-        self.SendRead.tx = ''
+        # self.SendRead.tx = ''
 
         self.showDataOnTextEdit = False
         self.requestModules = True
@@ -531,14 +531,13 @@ class SendRead(QThread):
 
     def __init__(self, port):
         QThread.__init__(self)
-        self.tx = '__init__'
+        self.tx = ''
         self.port = port
 
     def run(self):
         while 1:
-            self.msleep(50)
-            # print('x')
-            if self.tx != '':
+            self.msleep(20)
+            if self.tx:
                 try:
                     ser = serial.Serial(
                         port=self.port,
@@ -555,11 +554,11 @@ class SendRead(QThread):
                     self.msleep(50)
                     data = functions.ReadMess(ser)
                     print('RX  : ', functions.strToBin(data))
-                    self.checkData(data)
                     ser.close()
+                    self.checkData(data)
                 except:
                     # self.msleep(50)
-                    self.tx = ''
+                    # self.tx = ''
                     print('Send exception')
 
     def checkData(self, data):
