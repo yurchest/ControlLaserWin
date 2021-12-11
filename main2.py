@@ -95,6 +95,7 @@ class App(QWidget):
         self.greenText = QColor(111, 189, 100)
         self.yellowText = QColor(255, 255, 0)
         self.blackText = QColor(0, 0, 0)
+        self.clck_ContS = 0
         # self.SendRead.tx = ''
 
         self.showDataOnTextEdit = False
@@ -109,11 +110,21 @@ class App(QWidget):
     def checkData(self, data):
         if data:
             if self.checkControlSum(data):
-                self.w_root.label_63.setStyleSheet('background-color: rgb(0, 255, 0,150);border-radius: 20')
+                self.w_root.label_63.setStyleSheet('background-color: rgb(0, 255, 0, 100);border-radius: 20')
                 self.dataBin = functions.strToBin(data)
                 self.setLeds()
                 if self.showDataOnTextEdit == True:
                     self.w_root.textEdit.append(str(self.dataBin))
+                self.clck_ContS = 0
+            else:
+                print(data)
+                self.clck_ContS += 1
+                if self.clck_ContS > 3:
+                    self.clck_ContS = 4
+                self.w_root.label_63.setStyleSheet('background-color: rgb(255, 0, 0, 100);border-radius: 20')
+
+
+
 
     def checkMerr(self, data):
         if data.decode('raw_unicode_escape') == 'OK':
@@ -517,12 +528,14 @@ class App(QWidget):
         self.showDataOnTextEdit = not self.showDataOnTextEdit
 
     def checkCon(self, data):
-        if data == True:
+        if data:
             self.w_root.label_3.setFixedSize(41, 41)
             self.w_root.label_3.setPixmap(QPixmap(self.NET_ON))
         else:
             self.w_root.label_3.setFixedSize(121, 41)
             self.w_root.label_3.setPixmap(QPixmap(self.NET_OFF))
+            self.w_root.label_63.setText('NO RX DATA')
+            self.w_root.label_63.setStyleSheet('background-color: rgb(255, 0, 0,150);border-radius: 20')
 
 
 class SendRead(QThread):
@@ -592,7 +605,7 @@ class SendRepeat(QThread):
                 ser = serial.Serial(
                     port=self.port,
                     baudrate=9600,
-                    timeout=1,
+                    timeout=0.1,
                     parity=serial.PARITY_NONE,
                     stopbits=serial.STOPBITS_ONE,
                     bytesize=serial.EIGHTBITS
