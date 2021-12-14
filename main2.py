@@ -587,8 +587,7 @@ class SendRead(QThread):
             print('RX Status Modules or Ustr (clcked butt)')
             self.merr_signal.emit('st'.encode('raw_unicode_escape'))
 
-        elif len(data) == 2 and chr(data[0]) == 'E' or \
-                data.decode('raw_unicode_escape') == 'OK':
+        elif len(data) == 2 and chr(data[0]) == 'E' or data.decode('raw_unicode_escape') == 'OK':
             self.merr_signal.emit(data)
             print('merr RX : ', data)
 
@@ -621,6 +620,7 @@ class SendRepeat(QThread):
                 print('TX Repeat: ',functions.WriteCoM(tx))
                 self.msleep(40)
                 data = functions.ReadMess(ser)
+                print('RX Repeat : ', data)
                 ser.close()
                 if not data:
                     clck += 1
